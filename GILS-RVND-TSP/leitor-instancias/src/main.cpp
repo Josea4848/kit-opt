@@ -4,6 +4,26 @@
 
 using namespace std;
 
+typedef struct {
+    vector<int> sequencia;
+    double valorObj;
+} Solucao;
+
+// Exibe solução
+void exibirSolucao(Solucao *s) {
+for(int i = 0; i < s->sequencia.size() - 1; i++)
+    cout << s->sequencia[i] << " -> ";
+    cout << s->sequencia.back() << endl;
+}
+
+// Calcula 
+void calcularValorObj(Solucao *s, Data& dados){
+    s->valorObj = 0;
+    for(int i = 0; i < s->sequencia.size() - 1; i++) {
+        s->valorObj += dados.getDistance(s->sequencia[i], s->sequencia[i + 1]);
+    }
+}
+
 int main(int argc, char** argv) {
 
     auto data = Data(argc, argv[1]);
