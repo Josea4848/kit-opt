@@ -32,12 +32,44 @@ vector<int> Escolhe3Nos(vector<int>& nos) {
     return randomNos;
 }
 
+//Inseri vértice na solução e remove K do CL
+void inserirNaSolucao(Solucao& s, InsertionInfo info, vector<int>& CL) {
+    s.sequencia.insert(s.sequencia.begin() + 1 + info.arestaRemovida, info.noInserido);
+
+    //Removendo K de CL
+    for(size_t i = 0; i < CL.size(); i++) {
+        if(CL[i] == info.noInserido) {
+            CL.erase(CL.begin() + i);
+            break;
+        }
+    }
+}
+
 // Exibe solução
 void exibirSolucao(Solucao *s) {
     for(int i = 0; i < s->sequencia.size() - 1; i++) {
         cout << s->sequencia[i] << " -> ";
     }
     cout << s->sequencia.back() << endl;
+}
+
+// Ordena em ordem crescente de custo
+void ordernarEmOrdemCrescente(vector<InsertionInfo>& conjunto) {
+    while(true) {
+        bool mudou = false;
+
+        for(size_t i = 0; i < conjunto.size() - 1; i++) {
+            if(conjunto[i].custo > conjunto[i + 1].custo) {
+                InsertionInfo vectAux = conjunto[i];
+                conjunto[i] = conjunto[i + 1];
+                conjunto[i + 1] = vectAux;
+                mudou = true;
+            }
+        }
+        //Caso não haja mais alteração, a ordenação está completa
+        if(!mudou)
+            break;
+    }
 }
 
 // Calcula a distância total percorrida em tal
@@ -84,8 +116,11 @@ Solucao Construcao(size_t dimension, Data& data) {
 
     while(!CL.empty()) {
         vector<InsertionInfo> custoInsercao = CalcularCustoInsercao(s, CL, data);
-
-
+        ordernarEmOrdemCrescente(custoInsercao);
+        srand(time(NULL));
+        double alpha = rand() / RAND_MAX;
+        int selecionado = rand() % ((int) ceil(alpha * custoInsercao.size()));
+        inserirNaSolucao(s, custoInsercao[selecionado], CL);
     }
 
     
