@@ -123,8 +123,13 @@ Solucao Construcao(size_t dimension, Data& data) {
         inserirNaSolucao(s, custoInsercao[selecionado], CL);
     }
 
-    
+    return s;
 } 
+
+//Best improvement
+/* bool bestImprovement(Solucao *s) {
+    
+} */
 
 
 int main(int argc, char** argv) {
