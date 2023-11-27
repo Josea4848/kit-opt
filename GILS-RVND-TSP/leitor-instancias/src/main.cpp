@@ -127,9 +127,18 @@ Solucao Construcao(size_t dimension, Data& data) {
 } 
 
 //Best improvement
-/* bool bestImprovement(Solucao *s) {
-    
-} */
+bool bestImprovement(Solucao *s) {
+    double bestDelta = 0;
+    int best_i, best_j;
+
+    for(int i = 1; i < s->sequencia.size() - 1; i++) {
+        int vi = s->sequencia[i];
+        int vi_prev = s->sequencia[i - 1]; //previous
+        int vi_next = s->sequencia[i + 1]; //next
+
+        
+    }    
+} 
 
 
 int main(int argc, char** argv) {
