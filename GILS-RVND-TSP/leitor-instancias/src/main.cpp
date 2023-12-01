@@ -80,8 +80,6 @@ void calcularValorObj(Solucao *s, Data& dados){
     }
 }
 
-//
-
 // Calcula o custo de inserção de um conjunto
 vector<InsertionInfo> CalcularCustoInsercao(Solucao& s, vector<int>& CL, Data &dados) {
     int numSeq = s.sequencia.size();
@@ -127,7 +125,7 @@ Solucao Construcao(size_t dimension, Data& data) {
 } 
 
 //Best improvement
-bool bestImprovement(Solucao *s) {
+bool bestImprovement(Solucao *s, Data& data) {
     double bestDelta = 0;
     int best_i, best_j;
 
@@ -136,8 +134,27 @@ bool bestImprovement(Solucao *s) {
         int vi_prev = s->sequencia[i - 1]; //previous
         int vi_next = s->sequencia[i + 1]; //next
 
-        
-    }    
+        for(int j = i + 1; j < s->sequencia.size() - 1; j++) {
+            int vj = s->sequencia[j];
+            int vj_next = s->sequencia[j + 1];
+            int vj_prev = s->sequencia[j - 1];
+            double delta = data.getDistance(vi_prev,vi) -data.getDistance(vi,vi_next) + data.getDistance(vi_prev,vj) + data.getDistance(vj, vi_next) - data.getDistance(vj_prev, vj) - data.getDistance(vj, vj_next) + data.getDistance(vj_prev,vi) + data.getDistance(vi, vj_next);
+
+            if(delta < bestDelta) {
+                bestDelta = delta;
+                best_i = i;
+                best_j = j;
+            }
+        }
+    }
+
+    if(bestDelta < 0) {
+        std::swap(s->sequencia[best_i], s->sequencia[best_j]);
+        s->valorObj += bestDelta;
+        return true;
+    }
+
+    return false;    
 } 
 
 
