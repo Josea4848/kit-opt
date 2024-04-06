@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdlib>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -124,8 +125,8 @@ Solucao Construcao(size_t dimension, Data& data) {
     return s;
 } 
 
-//Best improvement
-bool bestImprovement(Solucao *s, Data& data) {
+//Best improvement swap
+bool bestImprovementSwap(Solucao *s, Data& data) {
     double bestDelta = 0;
     int best_i, best_j;
 
@@ -138,8 +139,9 @@ bool bestImprovement(Solucao *s, Data& data) {
             int vj = s->sequencia[j];
             int vj_next = s->sequencia[j + 1];
             int vj_prev = s->sequencia[j - 1];
-            double delta = data.getDistance(vi_prev,vi) -data.getDistance(vi,vi_next) + data.getDistance(vi_prev,vj) + data.getDistance(vj, vi_next) - data.getDistance(vj_prev, vj) - data.getDistance(vj, vj_next) + data.getDistance(vj_prev,vi) + data.getDistance(vi, vj_next);
-
+            //Custo Novo - anterior nos entre nós que podem ser alterados
+            double delta =  - data.getDistance(vi_prev,vi) - data.getDistance(vi,vi_next) + data.getDistance(vi_prev,vj) + data.getDistance(vj, vi_next) - data.getDistance(vj_prev, vj) - data.getDistance(vj, vj_next) + data.getDistance(vj_prev,vi) + data.getDistance(vi, vj_next);
+            //custo menor
             if(delta < bestDelta) {
                 bestDelta = delta;
                 best_i = i;
@@ -147,38 +149,86 @@ bool bestImprovement(Solucao *s, Data& data) {
             }
         }
     }
-
+    //delta negativo -> custo menor, então trocamos os nós
     if(bestDelta < 0) {
         std::swap(s->sequencia[best_i], s->sequencia[best_j]);
         s->valorObj += bestDelta;
         return true;
     }
 
+    //não houve redução de custo
     return false;    
 } 
 
 
-int main(int argc, char** argv) {
+bool bestImprovement2Opt(Solucao *s, Data &data) {
+    double bestDelta = 0;
+    int best_i, best_j;
+    size_t seq_size = s->sequencia.size(); //tamanho da sequencia
 
-    /* auto data = Data(argc, argv[1]);
+    for(int i = 0; i < seq_size - 3; i++) {
+        int vi = s->sequencia[i];
+        int vi_next  = s->sequencia[i + 1];
+        int limit = (!i) ? seq_size - 3 : seq_size - 2; // i == 0, o limite é menor, pela condição dos vértices proposta
+        for(int j = i + 2; j <= limit; j++) {
+            int vj = s->sequencia[j];
+            int vj_next = s->sequencia[(j + 1)];
+
+            double delta  = data.getDistance(vi, vj) + data.getDistance(vi_next, vj_next) - data.getDistance(vi, vi_next) - data.getDistance(vj, vj_next);
+            
+            if(delta < bestDelta) {
+                best_i = i + 1;
+                best_j = j;
+                bestDelta = delta;
+            } 
+        }
+    }
+
+    //se houve redução de custo
+    if (bestDelta < 0) {
+        reverse(s->sequencia.begin() + best_i, s->sequencia.begin() + best_j + 1);
+        s->valorObj += bestDelta;
+        return true;
+    } 
+
+    return false;
+}
+
+
+int main(int argc, char** argv) {
+    Solucao s;
+    auto data = Data(argc, argv[1]);
     data.read();
     size_t n = data.getDimension();
 
-    cout << "Dimension: " << n << endl;
-    cout << "DistanceMatrix: " << endl;
-    //data.printMatrixDist();
-
-
-    cout << "Exemplo de Solucao s = ";
+    cout << "Exemplo de Solucao s = " << n << endl;
     double cost = 0.0;
     for (size_t i = 1; i < n; i++) {
-        cout << i << " -> ";
+        s.sequencia.push_back(i);
+        cout << s.sequencia[i-1] << " -> ";
         cost += data.getDistance(i, i+1);
     }
     cost += data.getDistance(n, 1);
     cout << n << " -> " << 1 << endl;
-    cout << "Custo de S: " << cost << endl;  */
+    s.valorObj = cost;
+    s.sequencia.push_back(n);
+    s.sequencia.push_back(1);
 
+    cout << "Custo de S: " << cost << endl; 
+
+    //cout << "CHEGUEI" << data.getDistance(1, 5) << " == " << data.getDistance(5,1) << endl;
+
+    bestImprovement2Opt(&s, data);
+
+    cost = 0;
+    for (size_t i = 0; i < n; i++) {
+        cout << s.sequencia[i] << " -> ";
+        cost += data.getDistance(s.sequencia[i], s.sequencia[i+1]);
+    }
+    cout << s.sequencia[0] << endl;
+    //cost += data.getDistance(n, 1);
+    //cout << n << " -> " << 1 << endl;
+    cout << "Custo de S: " << s.valorObj << "===" << cost << endl;  
 
     return 0;
 }
