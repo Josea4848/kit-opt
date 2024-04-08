@@ -194,6 +194,46 @@ bool bestImprovement2Opt(Solucao *s, Data &data) {
     return false;
 }
 
+bool reinsertion(Solucao *s, Data &data) {
+    double bestDelta = 0;
+    int best_i, best_j;
+
+    for(int i = 1; i < s->sequencia.size() - 1; i++) {
+        int vi = s->sequencia[i];
+        int vi_next = s->sequencia[i + 1];
+        int vi_prev = s->sequencia[i - 1];
+        //cout << "[" << vi_prev << ", " << vi << ", " << vi_next << "]\n";
+        for(int j = i + 1; j < s->sequencia.size() - 1; j++) {
+            //cout << "(" << s->sequencia[i] << ", " << s->sequencia[j] << ")\n";
+            //if (j == i) 
+                //continue;
+            //possível antigo nó de posição j
+            int vj = s->sequencia[j];
+            int vj_next = s->sequencia[j+1];
+
+            double delta = data.getDistance(vi_prev, vi_next) + data.getDistance(vj, vi) + data.getDistance(vi, vj_next) - data.getDistance(vi_prev, vi) - data.getDistance(vi, vi_next) - data.getDistance(vj, vj_next);
+
+            if(delta < bestDelta) {
+                best_i  = i;
+                best_j = j;
+                bestDelta = delta;
+            }
+        }
+        
+    }
+
+    //se houve redução de custo
+    if(bestDelta < 0) {
+        int value = s->sequencia[best_i];
+        s->sequencia.erase(s->sequencia.begin() + best_i);
+        s->sequencia.insert(s->sequencia.begin() + best_j, value);
+        s->valorObj += bestDelta;
+        return true;
+    }
+    
+    return false;
+}
+
 
 int main(int argc, char** argv) {
     Solucao s;
@@ -218,7 +258,9 @@ int main(int argc, char** argv) {
 
     //cout << "CHEGUEI" << data.getDistance(1, 5) << " == " << data.getDistance(5,1) << endl;
 
-    bestImprovement2Opt(&s, data);
+    //bestImprovement2Opt(&s, data);
+    reinsertion(&s, data);
+
 
     cost = 0;
     for (size_t i = 0; i < n; i++) {
@@ -228,7 +270,8 @@ int main(int argc, char** argv) {
     cout << s.sequencia[0] << endl;
     //cost += data.getDistance(n, 1);
     //cout << n << " -> " << 1 << endl;
-    cout << "Custo de S: " << s.valorObj << "===" << cost << endl;  
+    cout << "Custo de S: " << s.valorObj << "===" << cost << endl;   
+
 
     return 0;
 }
