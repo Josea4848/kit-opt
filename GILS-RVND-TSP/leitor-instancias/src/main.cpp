@@ -205,30 +205,26 @@ bool bestImprovement2Opt(Solucao *s, Data &data) {
     return false;
 }
 
-bool reinsertion(Solucao *s , Data &data, int n) {
+bool or_opt(Solucao *s , Data &data, int n) {
     double bestDelta = 0;
     int best_i, best_j;
 
     for(int i = 1; i < s->sequencia.size() - n; i++) {
-        int vi = s->sequencia[i];
-        int vi_next = s->sequencia[i + n];
         int vi_prev = s->sequencia[i - 1];
+        int vi_first = s->sequencia[i];
+        int vi_last = s->sequencia[i + n - 1];
+        int vi_next = s->sequencia[i + n];
         
-        for(int j = 1; j < s->sequencia.size() - 1; j++) {
-            if(i == j)
+        for(int j = 0; j < s->sequencia.size() - 1; j++) {
+            if((j >= i && j <= i + n - 1) || (i == j + 1))
                 continue;
-
-            int vj_prev = s->sequencia[j - 1];
+            
             int vj = s->sequencia[j];
             int vj_next = s->sequencia[j + 1];
-            double delta;
-
-            if(j > i) {
-                delta = data.getDistance(vi_prev, vi_next) + data.getDistance(vi, vj) + data.getDistance(vi, vj_next) - data.getDistance(vi, vi_prev) - data.getDistance(vi, vi_next) - data.getDistance(vj, vj_next);
-            } else {
-                delta = data.getDistance(vi_prev, vi_next) + data.getDistance(vi, vj) + data.getDistance(vi, vj_prev) - data.getDistance(vi, vi_prev) - data.getDistance(vi, vi_next) - data.getDistance(vj, vj_prev);
-            }
             
+            double delta = data.getDistance(vi_first, vj) + data.getDistance(vi_last, vj_next) + data.getDistance(vi_prev, vi_next) - data.getDistance(vi_first, vi_prev) - data.getDistance(vi_last, vi_next) - data.getDistance(vj, vj_next);
+            
+            //verifica redução de custo            
             if(delta < bestDelta) {
                 best_i  = i;
                 best_j = j;
@@ -237,13 +233,25 @@ bool reinsertion(Solucao *s , Data &data, int n) {
         }
         
     }
-
+    cout << "Best i: " << best_i << " , Best j: " << best_j << endl;
     //se houve redução de custo
     if(bestDelta < 0) {
-        int value_1 = s->sequencia[best_i];
-        s->sequencia.erase(s->sequencia.begin() + best_i);
-        s->sequencia.insert(s->sequencia.begin() + best_j, value_1);
+        int value;
+        for(int  i = 0; i < n; i++) {
+            if(best_j < best_i) {
+                value = s->sequencia[best_i + i];
+                s->sequencia.erase(s->sequencia.begin() + best_i + i);
+                s->sequencia.insert(s->sequencia.begin() + best_j + 1 + i, value);
+            } else {
+                value = s->sequencia[best_i];
+                s->sequencia.erase(s->sequencia.begin() + best_i);
+                s->sequencia.insert(s->sequencia.begin() + best_j, value);
+            }
+        }    
+        
         s->valorObj += bestDelta;
+       
+
         return true;
     }
     
@@ -275,8 +283,8 @@ int main(int argc, char** argv) {
     //cout << "CHEGUEI" << data.getDistance(1, 5) << " == " << data.getDistance(5,1) << endl;
     //for(int c = 0; c < 10; c++)
     //bestImprovement2Opt(&s, data);
-    //reinsertion(&s, data, 1);
-    bestImprovementSwap(&s, data);
+    or_opt(&s, data, 3);
+   // bestImprovementSwap(&s, data);
 
     cost = 0;
     for (size_t i = 0; i < n; i++) {
