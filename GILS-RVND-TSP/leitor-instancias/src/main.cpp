@@ -148,7 +148,6 @@ bool bestImprovementSwap(Solucao *s, Data& data) {
             //Custo Novo - anterior nos entre nós que podem ser alterados
                 delta =  data.getDistance(vi, vj_prev) + data.getDistance(vi, vj_next) + data.getDistance(vj, vi_prev) +  data.getDistance(vj, vi_next) - data.getDistance(vi, vi_prev) - data.getDistance(vi, vi_next) - data.getDistance(vj, vj_prev) - data.getDistance(vj, vj_next);
 
-                cout << data.getDistance(vi, vj_prev) << " " <<  data.getDistance(vi, vj_next) << " " << data.getDistance(vj, vi_prev) << " " <<  data.getDistance(vj, vi_next) << " " << data.getDistance(vi, vi_prev)<< " " << data.getDistance(vi, vi_next)<< " " << data.getDistance(vj, vj_prev)<< " " << data.getDistance(vj, vj_next) << endl;
             }
                 
             
@@ -233,7 +232,7 @@ bool or_opt(Solucao *s , Data &data, int n) {
         }
         
     }
-    cout << "Best i: " << best_i << " , Best j: " << best_j << endl;
+    
     //se houve redução de custo
     if(bestDelta < 0) {
         int value;
@@ -256,6 +255,40 @@ bool or_opt(Solucao *s , Data &data, int n) {
     }
     
     return false;
+}
+
+//Busca local
+void buscaLocal(Solucao *s, Data &data) {
+    srand(time(NULL));
+    vector<int> NL = {1, 2, 3, 4, 5};
+    bool improved = false;
+    int  i = 0;
+    while(!NL.empty()) {
+        int n = rand() % NL.size();
+        
+        switch(NL[n]) {
+            case 1: //Swap
+                improved = bestImprovementSwap(s, data);
+                break;
+            case 2: //2Opt
+                improved = bestImprovement2Opt(s, data);
+                break;
+            case 3: //Reinsertion
+                improved = or_opt(s, data, 1);
+                break;
+            case 4: //orOpt 2
+                improved = or_opt(s, data, 2);
+                break;
+            case 5: //orOpt 3
+                improved = or_opt(s, data, 3);
+                break;
+        }
+        //Se houve melhoria
+        if(improved) 
+            NL = {1, 2, 3, 4, 5};
+        else 
+            NL.erase(NL.begin() + n);   
+    }
 }
 
 
@@ -283,8 +316,9 @@ int main(int argc, char** argv) {
     //cout << "CHEGUEI" << data.getDistance(1, 5) << " == " << data.getDistance(5,1) << endl;
     //for(int c = 0; c < 10; c++)
     //bestImprovement2Opt(&s, data);
-    or_opt(&s, data, 3);
+    //or_opt(&s, data, 3);
    // bestImprovementSwap(&s, data);
+    buscaLocal(&s, data);    
 
     cost = 0;
     for (size_t i = 0; i < n; i++) {
@@ -299,6 +333,8 @@ int main(int argc, char** argv) {
 
 
     cout << data.getDistance(5, 5);
+
+    
 
     return 0;
 }
