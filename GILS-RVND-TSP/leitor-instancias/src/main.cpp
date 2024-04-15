@@ -291,6 +291,70 @@ void buscaLocal(Solucao *s, Data &data) {
     }
 }
 
+void pertubacao(Solucao *s, Data &data) {
+    srand(time(NULL));
+    
+    int v = s->sequencia.size() - 1;
+    int random_i = rand()%(v - 2) + 1;
+    int size_i = rand()%(v/10 - 1) + 1;    
+
+    //se ultrapassar o último nó disponível antes de voltar ao ponto inicial
+    if(random_i + size_i >= v) 
+        size_i = v - random_i - 1;
+
+    int random_j = rand()%(v - size_i - 4) + 1;
+    int size_j = rand()%(v/10 - 1) + 1;
+
+    //se for depois do primeiro segmento
+    if(random_j >= random_i - 1) {
+        random_j += size_i + 2;
+
+        if(random_j + size_j >= v)
+            size_j = v - random_j - 1;
+    }
+    else {
+        //Não pode ultrapassar as soluções nem ser vizinho (a esquerda) do primeiro segmento
+        if(random_j + size_j >= random_i)
+            size_j = random_i - random_j - 1;
+    }
+    
+    cout << "Size solution: " << size_i << "\nRandom_i: " << random_i << "\nRandom size:" << size_i << endl;
+    cout << "[";
+    for(int i  = random_i; i <= random_i + size_i; i++) {
+        cout << s->sequencia[i] << ", "; 
+    }
+    cout << "]\n";
+    cout << "=============================\n"; 
+
+    cout << "Size solution: " << size_j << "\nRandom_j: " << random_j << "\nRandom size:" << size_j << endl;
+
+    cout << "[";
+    for(int i  = random_j; i <= random_j + size_j; i++) {
+        cout << s->sequencia[i] << ", "; 
+    }
+    cout << "]\n";
+
+    //primeiro segmento
+    int vi_previus = s->sequencia[random_i - 1];
+    int vi_first = s->sequencia[random_i];
+    int vi_last = s->sequencia[random_i + size_i];
+    int vi_next = s->sequencia[random_i + size_i + 1];
+
+    //segundo segmento
+    int vj_previus = s->sequencia[random_j - 1];
+    int vj_first = s->sequencia[random_j];
+    int vj_last = s->sequencia[random_j + size_j];
+    int vj_next = s->sequencia[random_j + size_j + 1];
+
+    
+
+    cout << vi_previus << " [" << vi_first << ", ..., " << vi_last << "]" << " " << vi_next << endl;
+    cout << vj_previus << " [" << vj_first << ", ..., " << vj_last << "]" << " " << vj_next << endl;
+
+    //Solucao new_solution;
+    //s->valorObj += 
+
+}
 
 int main(int argc, char** argv) {
     Solucao s;
@@ -318,7 +382,7 @@ int main(int argc, char** argv) {
     //bestImprovement2Opt(&s, data);
     //or_opt(&s, data, 3);
    // bestImprovementSwap(&s, data);
-    buscaLocal(&s, data);    
+    /* buscaLocal(&s, data);    
 
     cost = 0;
     for (size_t i = 0; i < n; i++) {
@@ -332,8 +396,10 @@ int main(int argc, char** argv) {
 
 
 
-    cout << data.getDistance(5, 5);
+    cout << data.getDistance(5, 5); */
 
+
+    pertubacao(&s, data);
     
 
     return 0;
