@@ -292,11 +292,10 @@ void buscaLocal(Solucao *s, Data &data) {
 }
 
 void pertubacao(Solucao *s, Data &data) {
-    srand(time(NULL));
-    
     int v = s->sequencia.size() - 1;
-    int random_i = rand()%(v - 2) + 1;
-    int size_i = rand()%(v/10 - 1) + 1;    
+    int random_i = rand()%(v - 2) + 1; //gera índice i aleatório
+    int size_i = rand()%(v/10 - 1) + 1; //gera tamanho aleatório com limite 
+    double delta;
 
     //se ultrapassar o último nó disponível antes de voltar ao ponto inicial
     if(random_i + size_i >= v) 
@@ -318,27 +317,15 @@ void pertubacao(Solucao *s, Data &data) {
             size_j = random_i - random_j - 1;
     }
     
-    cout << "Size solution: " << size_i << "\nRandom_i: " << random_i << "\nRandom size:" << size_i << endl;
-    cout << "[";
-    for(int i  = random_i; i <= random_i + size_i; i++) {
-        cout << s->sequencia[i] << ", "; 
-    }
-    cout << "]\n";
-    cout << "=============================\n"; 
-
-    cout << "Size solution: " << size_j << "\nRandom_j: " << random_j << "\nRandom size:" << size_j << endl;
-
-    cout << "[";
-    for(int i  = random_j; i <= random_j + size_j; i++) {
-        cout << s->sequencia[i] << ", "; 
-    }
-    cout << "]\n";
-
     //primeiro segmento
     int vi_previus = s->sequencia[random_i - 1];
     int vi_first = s->sequencia[random_i];
     int vi_last = s->sequencia[random_i + size_i];
     int vi_next = s->sequencia[random_i + size_i + 1];
+
+    //criando vetor auxiliar para primeiro segmento (i)
+    vector<int> i_aux;
+    i_aux.insert(i_aux.begin(), s->sequencia.begin() + random_i, s->sequencia.begin() + random_i + size_i + 1);
 
     //segundo segmento
     int vj_previus = s->sequencia[random_j - 1];
@@ -346,14 +333,42 @@ void pertubacao(Solucao *s, Data &data) {
     int vj_last = s->sequencia[random_j + size_j];
     int vj_next = s->sequencia[random_j + size_j + 1];
 
-    
+    //criando vetor auxiliar para segundo segmento (j)
+    vector<int> j_aux;
+    j_aux.insert(j_aux.begin(), s->sequencia.begin() + random_j, s->sequencia.begin() + random_j + size_j + 1);
 
-    cout << vi_previus << " [" << vi_first << ", ..., " << vi_last << "]" << " " << vi_next << endl;
-    cout << vj_previus << " [" << vj_first << ", ..., " << vj_last << "]" << " " << vj_next << endl;
+    //o seguimento mais próximo do final será removido primeiramente
+    if (random_i > random_j) {
+        //remove segmento i
+        s->sequencia.erase(s->sequencia.begin() + random_i, s->sequencia.begin() + random_i + size_i + 1);
 
-    //Solucao new_solution;
-    //s->valorObj += 
+        //adiciona segmento j auxiliar
+        s->sequencia.insert(s->sequencia.begin() + random_i, j_aux.begin(), j_aux.begin() + j_aux.size()); 
 
+        //remove segmento j
+        s->sequencia.erase(s->sequencia.begin() + random_j, s->sequencia.begin() + random_j + size_j + 1);
+
+        //insere segmento i
+        s->sequencia.insert(s->sequencia.begin() + random_j, i_aux.begin(), i_aux.begin() + i_aux.size());
+        
+
+    } else {
+        //remove segmento j
+        s->sequencia.erase(s->sequencia.begin() + random_j, s->sequencia.begin() + random_j + size_j + 1);
+
+        //insere segmento i auxiliar
+        s->sequencia.insert(s->sequencia.begin() + random_j, i_aux.begin(), i_aux.begin() + i_aux.size());
+
+        //remove segmento i
+        s->sequencia.erase(s->sequencia.begin() + random_i, s->sequencia.begin() + random_i + size_i + 1);
+
+        //adiciona segmento j auxiliar
+        s->sequencia.insert(s->sequencia.begin() + random_i, j_aux.begin(), j_aux.begin() + j_aux.size()); 
+    }
+
+    //calculando variação de custo da solução após pertubação
+    delta = data.getDistance(vj_previus, vi_first) + data.getDistance(vi_last, vj_next) + data.getDistance(vi_previus, vj_first) + data.getDistance(vj_last, vi_next) - data.getDistance(vi_previus, vi_first) - data.getDistance(vi_last, vi_next) - data.getDistance(vj_previus, vj_first) - data.getDistance(vj_last, vj_next);
+    s->valorObj += delta;
 }
 
 int main(int argc, char** argv) {
@@ -372,35 +387,37 @@ int main(int argc, char** argv) {
     cost += data.getDistance(n, 1);
     cout << n << " -> " << 1 << endl;
     s.valorObj = cost;
+
     s.sequencia.push_back(n);
     s.sequencia.push_back(1);
 
     cout << "Custo de S: " << cost << endl; 
-
-    //cout << "CHEGUEI" << data.getDistance(1, 5) << " == " << data.getDistance(5,1) << endl;
-    //for(int c = 0; c < 10; c++)
-    //bestImprovement2Opt(&s, data);
-    //or_opt(&s, data, 3);
-   // bestImprovementSwap(&s, data);
-    /* buscaLocal(&s, data);    
-
     cost = 0;
-    for (size_t i = 0; i < n; i++) {
-        cout << s.sequencia[i] << " -> ";
-        cost += data.getDistance(s.sequencia[i], s.sequencia[i+1]);
-    }
-    cout << s.sequencia[0] << endl;
-    //cost += data.getDistance(n, 1);
-    //cout << n << " -> " << 1 << endl;
-    cout << "Custo de S: " << s.valorObj << "===" << cost << endl;   
+//     //cout << "CHEGUEI" << data.getDistance(1, 5) << " == " << data.getDistance(5,1) << endl;
+//     //for(int c = 0; c < 10; c++)
+//     //bestImprovement2Opt(&s, data);
+//     //or_opt(&s, data, 3);
+//    // bestImprovementSwap(&s, data);
+//     /* buscaLocal(&s, data);*/    
 
-
-
-    cout << data.getDistance(5, 5); */
-
+//     cost = 0;
+//     for (size_t i = 0; i < n; i++) {
+//         cout << s.sequencia[i] << " -> ";
+//         cost += data.getDistance(s.sequencia[i], s.sequencia[i+1]);
+//     }
+//     cout << s.sequencia[0] << endl;
+//     //cost += data.getDistance(n, 1);
+//     //cout << n << " -> " << 1 << endl;
+//     cout << "Custo de S: " << s.valorObj << "===" << cost << endl;   
 
     pertubacao(&s, data);
-    
+    int i;
+    for(i = 0; i < s.sequencia.size() - 1; i++) {
+        cout << s.sequencia[i] << " -> ";
+        cost += data.getDistance(s.sequencia[i], s.sequencia[i + 1]);
+    }
+    cout << s.sequencia[i] << endl;
+    cout << "Custo real: " << cost << " Custo estimado: " << s.valorObj;
 
     return 0;
 }
