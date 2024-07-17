@@ -6,6 +6,7 @@
 #include <time.h>
 #include <algorithm>
 #include <fstream>
+#include <bits/stdc++.h> 
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
@@ -67,20 +68,16 @@ void exibirSolucao(Solucao *s) {
 
 // Ordena em ordem crescente de custo
 void ordernarEmOrdemCrescente(vector<InsertionInfo>& conjunto) {
-    while(true) {
-        bool mudou = false;
-
-        for(size_t i = 0; i < conjunto.size() - 1; i++) {
-            if(conjunto[i].custo > conjunto[i + 1].custo) {
-                InsertionInfo vectAux = conjunto[i];
-                conjunto[i] = conjunto[i + 1];
-                conjunto[i + 1] = vectAux;
-                mudou = true;
-            }
+    InsertionInfo num;
+    int j = 0;
+    for(int i = 1; i < conjunto.size(); i++) {
+        num = conjunto[i];
+        j = i - 1;
+        while(j >= 0 && conjunto[j].custo > num.custo) {
+            conjunto[j + 1] = conjunto[j];
+            j--;
         }
-        //Caso não haja mais alteração, a ordenação está completa
-        if(!mudou)
-            break;
+        conjunto[j + 1] = num;
     }
 }
 
@@ -420,22 +417,8 @@ Solucao ILS(int maxIter, int maxIterILS, Data &data, int dimension) {
                 best = s;
                 iterILS = 0;
             }
-            int estimed = s.valorObj;
-            calcularValorObj(&s, data);
-            if(estimed != s.valorObj) {
-                cout << "Cálculo errado após BuscaLocal()\n";
-                exit(EXIT_FAILURE);
-            }
-
             s = pertubacao(best, data);
             iterILS++;
-
-            estimed = s.valorObj;
-            calcularValorObj(&s, data);
-            if(estimed != s.valorObj) {
-                cout << "Cálculo errado após Pertubação()\n";
-                exit(EXIT_FAILURE);
-            }
         }
 
         if(best.valorObj < bestOfAll.valorObj) {
@@ -454,7 +437,7 @@ int main(int argc, char** argv) {
     auto data = Data(argc, argv[1]);
     data.read();
     size_t n = data.getDimension();
-    Solucao bestOfAll;
+    double somaCustos;
 
     int maxIter = 50;
     int maxIterILS;
@@ -465,43 +448,19 @@ int main(int argc, char** argv) {
         maxIterILS = n;
     }
 
-    //medição
-    auto inicio = high_resolution_clock::now();
-    bestOfAll = ILS(maxIter, maxIterILS, data, n);
-    auto fim = high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
 
-    const auto tempo = duration_cast<milliseconds>(fim - inicio);
 
-    string line;
-    fstream benchMark_in("benchmark.csv", std::ios::in);
-
-    //verifica se arquivo abriu
-    if(benchMark_in.is_open()) {
-        getline(benchMark_in, line);
-
-        //verifica se já tem o cabeçalho da tabela
-        if(line == "Instância;Tempo;Custo");
-        else {
-            fstream benchMark_out("benchmark.csv", std::ios::app);
-            if(benchMark_out.is_open()) {
-                benchMark_out << "Instância;Tempo;Custo\n";
-                benchMark_out.close();
-            } else {
-                cout << "Erro ao abrir/criar benchmark.csv\n"; 
-            }
-        }
- 
-        benchMark_in.close();
-    } else {
-        cout << "Erro ao abrir/criar benchmark.csv\n"; 
+    for(int i = 0; i < 10; i++) {
+        Solucao bestOfAll = ILS(maxIter, maxIterILS, data, n);
+        somaCustos += bestOfAll.valorObj;
     }
 
-    fstream benchMark_out("benchmark.csv", std::ios::app);
-    if(benchMark_out.is_open())
-        benchMark_out << data.getInstanceName() << ";" << (double)tempo.count()/1000.0 << ";" << bestOfAll.valorObj << endl;
-    else {
-        cout << "Erro ao abrir/criar benchmark.csv\n"; 
-    }
+    //Créditos a samuca pelo benchmark
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
-    benchMark_out.close();
+
+    std::cout << data.getInstanceName();
+    printf(" - %.3lf %.1lf\n", (double)(duration.count())/10000, somaCustos/10);
 }
