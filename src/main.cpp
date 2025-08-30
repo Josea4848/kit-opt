@@ -1,28 +1,27 @@
-#include "Data.h"
+#include "construction.h"
+#include "seed.h"
+#include "solution.h"
 #include <iostream>
 
-using namespace std;
+int main(int argc, char **argv) {
+  // Gerando seed
+  genSeed();
 
-int main(int argc, char** argv) {
+  // Lendo dados de instância
+  auto data = Data(argc, argv[1]);
+  data.read();
+  size_t n = data.getDimension();
 
-    auto data = Data(argc, argv[1]);
-    data.read();
-    size_t n = data.getDimension();
+  // Inicializando estrutura da solução
+  Solution s = construction(data);
 
-    cout << "Dimension: " << n << endl;
-    cout << "DistanceMatrix: " << endl;
-    data.printMatrixDist();
+  showSolution(s);
 
+  cout << s.value << endl;
 
-    cout << "Exemplo de Solucao s = ";
-    double cost = 0.0;
-    for (size_t i = 1; i < n; i++) {
-        cout << i << " -> ";
-        cost += data.getDistance(i, i+1);
-    }
-    cost += data.getDistance(n, 1);
-    cout << n << " -> " << 1 << endl;
-    cout << "Custo de S: " << cost << endl;
+  calculateValue(s, data);
 
-    return 0;
+  cout << s.value << endl;
+
+  return 0;
 }
