@@ -85,6 +85,6 @@ void insertSolution(Solution &s, InsertionInfo &selected,
   s.sequence.insert(s.sequence.begin() + selected.removed_edge + 1,
                     cl[selected.inserted_index]);
   s.value += selected.cost;
-  std::iter_swap(cl.begin() + selected.inserted_index, cl.end());
+  std::iter_swap(cl.begin() + selected.inserted_index, cl.end() - 1);
   cl.pop_back();
 }
