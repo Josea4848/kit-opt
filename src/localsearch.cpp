@@ -1,4 +1,40 @@
 #include "localsearch.h"
+#include <algorithm>
+#include <random>
+
+void localSearch(Solution &s, Data &data) {
+  std::vector<int> NL = {1, 2, 3, 4, 5};
+  bool improved = false;
+
+  while (NL.size()) {
+    std::uniform_int_distribution<> range(0, NL.size() - 1);
+    int n = range(gen);
+
+    switch (NL[n]) {
+    case 1:
+      improved = bestImprovementSwap(s, data);
+      break;
+    case 2:
+      improved = bestImprovement2Opt(s, data);
+      break;
+    case 3:
+      improved = bestImprovementOrOpt(s, data, 1);
+      break;
+    case 4:
+      improved = bestImprovementOrOpt(s, data, 2);
+      break;
+    case 5:
+      improved = bestImprovementOrOpt(s, data, 3);
+      break;
+    }
+
+    if (improved) {
+      NL = {1, 2, 3, 4, 5};
+    } else {
+      NL.erase(NL.begin() + n);
+    }
+  }
+}
 
 bool bestImprovementSwap(Solution &s, Data &data) {
   double best_delta = 0;

@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
   // bestImprovement2Opt(s, data);
 
-  bestImprovementOrOpt(s, data, 3);
+  localSearch(s, data);
 
   cout << "custo dps: " << s.value << endl;
 
