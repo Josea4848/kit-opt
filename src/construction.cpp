@@ -45,8 +45,8 @@ void chooseThreeNodes(std::vector<int> &v, Solution &s, Data &data) {
   for (int i = 0; i < 3; i++) {
     uniform_int_distribution<> range(0, v.size() - 1);
     rd_index = range(gen);
+    s.sequence.push_back(v[rd_index]);
     std::iter_swap(v.begin() + rd_index, v.end() - 1);
-    s.sequence.push_back(v[i]);
     s.value += data.getDistance(s.sequence[i], s.sequence[i + 1]);
     v.pop_back();
   }
