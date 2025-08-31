@@ -23,7 +23,9 @@ int main(int argc, char **argv) {
   cout << "custo antes: " << s.value << endl;
   // bestImprovementSwap(s, data);
 
-  bestImprovement2Opt(s, data);
+  // bestImprovement2Opt(s, data);
+
+  bestImprovementOrOpt(s, data, 3);
 
   cout << "custo dps: " << s.value << endl;
 

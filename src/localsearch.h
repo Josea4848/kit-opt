@@ -7,5 +7,6 @@
 
 bool bestImprovementSwap(Solution &s, Data &data);
 bool bestImprovement2Opt(Solution &s, Data &data);
+bool bestImprovementOrOpt(Solution &s, Data &data, int n);
 
 #endif
