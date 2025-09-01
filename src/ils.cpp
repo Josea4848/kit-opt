@@ -14,21 +14,19 @@ Solution ILS(int maxIter, int maxIterILS, Data &data) {
     int iterILS = 0;
 
     // Geração de soluções
-    Solution s; 
-    construction(s, data);
-    Solution best = s;
+    Solution best;
+    construction(best, data);
+    localSearch(best, data);
 
     while (iterILS < maxIterILS) {
+      Solution s = best;
+      perturbation(s, data);
       localSearch(s, data);
-
       // Houve melhora após pertubação + busca local
       if (s.value < best.value) {
-        best = std::move(s);
+        best = s;
         iterILS = 0;
       }
-
-      s = best;
-      perturbation(s, data);
       iterILS++;
     }
 
@@ -63,7 +61,8 @@ void perturbation(Solution &s, Data &data) {
     j_end = j_size + j_start - 1;
 
     // Será necessário gerar novos segmentos
-    if (j_end < s.sequence.size() - 1 && (j_start > i_end + 1 || j_end < i_start - 1))
+    if (j_end < s.sequence.size() - 1 &&
+        (j_start > i_end + 1 || j_end < i_start - 1))
       break;
   }
 
@@ -92,14 +91,9 @@ void perturbation(Solution &s, Data &data) {
                 s.sequence.begin() + i_end - j_size + 1);
   }
 
-
-  s.value += data.getDistance(vj_first, vi_prev) +
-               data.getDistance(vj_last, vi_next) +
-               data.getDistance(vi_first, vj_prev) +
-               data.getDistance(vi_last, vj_next) -
-               data.getDistance(vi_first, vi_prev) -
-               data.getDistance(vi_last, vi_next) -
-               data.getDistance(vj_first, vj_prev) -
-               data.getDistance(vj_last, vj_next);
-  
+  s.value +=
+      data.getDistance(vj_first, vi_prev) + data.getDistance(vj_last, vi_next) +
+      data.getDistance(vi_first, vj_prev) + data.getDistance(vi_last, vj_next) -
+      data.getDistance(vi_first, vi_prev) - data.getDistance(vi_last, vi_next) -
+      data.getDistance(vj_first, vj_prev) - data.getDistance(vj_last, vj_next);
 }

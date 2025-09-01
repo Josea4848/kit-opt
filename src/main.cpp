@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-#define NUM_THREADS 6
+#define NUM_THREADS 10
 
 typedef struct result {
   double value;
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
   }
 
   // Benchmark
-  file.open("benchmark.txt", std::ios::app);
+  file.open("benchmark_10.txt", std::ios::app);
   if (!file.is_open()) {
     std::cerr << "Erro ao abrir o arquivo\n";
     return -1;
