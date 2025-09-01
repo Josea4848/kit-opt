@@ -4,80 +4,79 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <thread>
 #include <vector>
 
-#define NUM_THREADS 10
+#define NUM_THREADS 6
 
-// typedef struct result {
-//     double value;
-//     double time;
-// } result;
+typedef struct result {
+  double value;
+  double time;
+} result;
 
-// // Função que retorna o resultado ao invés de usar mutex
-// result executeILS(Data &data, int maxIter, int maxIterILS) {
-//     auto start = std::chrono::high_resolution_clock::now();
-//     Solution s = ILS(maxIter, maxIterILS, data);
-//     auto stop = std::chrono::high_resolution_clock::now();
+std::mutex mtx;
+std::vector<result> results;
 
-//     double duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() / 1000.0;
-//     return {s.value, duration};
-// }
+void executeILS(char *path, int qtd_arg) {
+  // Lendo dados de instância
+  auto data = Data(qtd_arg, path);
+  data.read();
+  size_t n = data.getDimension();
+  int maxIter = 50;
+  int maxIterILS = n >= 150 ? n / 2 : n;
+
+  auto start = std::chrono::high_resolution_clock::now();
+  Solution s = ILS(maxIter, maxIterILS, data);
+  auto stop = std::chrono::high_resolution_clock::now();
+  double duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(stop - start)
+          .count() /
+      1000.0;
+  mtx.lock();
+  results.push_back({s.value, duration});
+  mtx.unlock();
+}
 
 int main(int argc, char **argv) {
-    std::fstream file;
-    double sum_time = 0, sum_value = 0;
+  std::fstream file;
+  double sum_time = 0, sum_value = 0;
 
-    // Gerando seed
-    genSeed();
+  // Gerando seed
+  genSeed();
 
-    // Lendo dados de instância
-    auto data = Data(argc, argv[1]);
-    data.read();
-    size_t n = data.getDimension();
-    int maxIter = 50;
-    int maxIterILS = n >= 150 ? n / 2 : n;
+  // Lendo dados de instância
+  auto data = Data(argc, argv[1]);
+  data.read();
+  size_t n = data.getDimension();
+  int maxIter = 50;
+  int maxIterILS = n >= 150 ? n / 2 : n;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0 ; i < 10; i++) {
-      Solution s = ILS(maxIter, maxIterILS, data);
-      sum_value += s.value;
-    }
+  // Criando e executando threads
+  std::vector<std::thread> threads;
+  for (int i = 0; i < NUM_THREADS; i++) {
+    threads.emplace_back(executeILS, argv[1], argc);
+  }
 
-    auto stop = std::chrono::high_resolution_clock::now();
-    double duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() / 10000.0;
+  for (auto &t : threads)
+    t.join();
 
-    // Vetor para armazenar resultados de cada thread
-    // std::vector<result> results(NUM_THREADS);
+  for (auto &r : results) {
+    sum_time += r.time;
+    sum_value += r.value;
+  }
 
-    // Criando e executando threads
-    // std::vector<std::thread> threads;
-    // for (int i = 0; i < NUM_THREADS; i++) {
-    //     threads.emplace_back([&, i]() {
-    //         results[i] = executeILS(data, maxIter, maxIterILS);
-    //     });
-    // }
+  // Benchmark
+  file.open("benchmark.txt", std::ios::app);
+  if (!file.is_open()) {
+    std::cerr << "Erro ao abrir o arquivo\n";
+    return -1;
+  }
 
-    // // Esperar todas terminarem
-    // for (auto &t : threads) t.join();
+  file << "\nInstância: " << data.getInstanceName()
+       << "\nMédia tempo: " << sum_time / (double)NUM_THREADS
+       << "\nMédia valor: " << sum_value / (double)NUM_THREADS << std::endl;
 
-    // // Somando resultados
-    // for (auto &r : results) {
-    //     sum_time += r.time;
-    //     sum_value += r.value;
-    // }
-
-    // Benchmark
-    file.open("benchmark.txt", std::ios::app);
-    if (!file.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo\n";
-        return -1;
-    }
-
-    file << "\nInstância: " << data.getInstanceName()
-         << "\nMédia tempo: " << duration 
-         << "\nMédia valor: " << sum_value / 10 << std::endl;
-
-    file.close();
-    return 0;
+  file.close();
+  return 0;
 }

@@ -1,24 +1,80 @@
 CPU: Ryzen 5 5600 x 12
 Memory: 16GB 3200mhz
+6 Repetições
 
 
+Instância: a280
+Média tempo: 51.2207
+Média valor: 2579
 
-Instância: gr17
-Média tempo: 0.0042
-Média valor: 2085
+Instância: ali535
+Média tempo: 917.293
+Média valor: 202422
 
 Instância: att48
-Média tempo: 0.158
+Média tempo: 0.170667
 Média valor: 10628
 
-Instância: kroA100
-Média tempo: 1.9067
-Média valor: 21282
+Instância: att532
+Média tempo: 837.876
+Média valor: 27729
 
-Instância: kroA150
-Média tempo: 6.1135
-Média valor: 26524
+Instância: bayg29
+Média tempo: 0.0255
+Média valor: 1610
 
-Instância: st70
-Média tempo: 0.5743
-Média valor: 675
+Instância: bays29
+Média tempo: 0.0275
+Média valor: 2020
+
+Instância: berlin52
+Média tempo: 0.203333
+Média valor: 7542
+
+Instância: bier127
+Média tempo: 6.1295
+Média valor: 118282
+
+Instância: brazil58
+Média tempo: 0.2675
+Média valor: 25395
+
+Instância: brg180
+Média tempo: 6.69983
+Média valor: 1950
+
+Instância: burma14
+Média tempo: 0.002
+Média valor: 3323
+
+Instância: ch130
+Média tempo: 6.306
+Média valor: 6110
+
+Instância: ch150
+Média tempo: 5.84817
+Média valor: 6528
+
+Instância: d198
+Média tempo: 17.4675
+Média valor: 15780
+
+Instância: d493
+Média tempo: 902.183
+Média valor: 35028.3
+
+Instância: dantzig42
+Média tempo: 0.1
+Média valor: 699
+
+Instância: eil101
+Média tempo: 2.45767
+Média valor: 629
+
+Instância: eil51
+Média tempo: 0.202
+Média valor: 426
+
+Instância: eil76
+Média tempo: 0.924167
+Média valor: 538
