@@ -3,6 +3,7 @@
 #include "solution.h"
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -52,6 +53,11 @@ int main(int argc, char **argv) {
   int maxIter = 50;
   int maxIterILS = n >= 150 ? n / 2 : n;
 
+  // por enquanto apenas para instâncias menores que 300
+  if (n >= 300) {
+    return 1;
+  } 
+
   // Criando e executando threads
   std::vector<std::thread> threads;
   for (int i = 0; i < NUM_THREADS; i++) {
@@ -67,15 +73,16 @@ int main(int argc, char **argv) {
   }
 
   // Benchmark
-  file.open("benchmark_10.txt", std::ios::app);
+  file.open("Benchmark/benchmark_10.txt", std::ios::app);
   if (!file.is_open()) {
     std::cerr << "Erro ao abrir o arquivo\n";
     return -1;
   }
 
-  file << "\nInstância: " << data.getInstanceName()
-       << "\nMédia tempo: " << sum_time / (double)NUM_THREADS
-       << "\nMédia valor: " << sum_value / (double)NUM_THREADS << std::endl;
+  file << "\nInstância: " << data.getInstanceName() << std::endl;
+  file << "Média valor: " << sum_value / (double)NUM_THREADS << std::endl;
+  file << std::fixed << std::setprecision(3);
+  file << "Média tempo: " << sum_time / (double)NUM_THREADS << std::endl;
 
   file.close();
   return 0;

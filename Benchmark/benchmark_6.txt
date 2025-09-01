@@ -1,6 +1,6 @@
 CPU: Ryzen 5 5600 x 12
 Memory: 16GB 3200mhz
-6 Repetições
+6 Repetições com thread
 
 
 Instância: a280

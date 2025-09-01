@@ -1,0 +1,235 @@
+CPU: Ryzen 5 5600 x 12
+Memory: 16GB 3200mhz
+10 Repetições com thread
+
+Instância: a280
+Média valor: 2579
+Média tempo: 89.305
+
+Instância: att48
+Média valor: 10628
+Média tempo: 0.249
+
+Instância: bayg29
+Média valor: 1610
+Média tempo: 0.038
+
+Instância: bays29
+Média valor: 2020
+Média tempo: 0.041
+
+Instância: berlin52
+Média valor: 7542
+Média tempo: 0.301
+
+Instância: bier127
+Média valor: 118282
+Média tempo: 10.015
+
+Instância: brazil58
+Média valor: 25395
+Média tempo: 0.436
+
+Instância: brg180
+Média valor: 1950
+Média tempo: 11.083
+
+Instância: burma14
+Média valor: 3323
+Média tempo: 0.003
+
+Instância: ch130
+Média valor: 6110
+Média tempo: 10.339
+
+Instância: ch150
+Média valor: 6528.5
+Média tempo: 9.118
+
+Instância: d198
+Média valor: 15780
+Média tempo: 29.883
+
+Instância: dantzig42
+Média valor: 699
+Média tempo: 0.158
+
+Instância: eil101
+Média valor: 629
+Média tempo: 3.787
+
+Instância: eil51
+Média valor: 426
+Média tempo: 0.319
+
+Instância: eil76
+Média valor: 538
+Média tempo: 1.394
+
+Instância: fri26
+Média valor: 937
+Média tempo: 0.027
+
+Instância: gil262
+Média valor: 2378.3
+Média tempo: 84.521
+
+Instância: gr120
+Média valor: 6942
+Média tempo: 8.102
+
+Instância: gr137
+Média valor: 69853
+Média tempo: 11.041
+
+Instância: gr17
+Média valor: 2085
+Média tempo: 0.007
+
+Instância: gr202
+Média valor: 40160.2
+Média tempo: 34.895
+
+Instância: gr21
+Média valor: 2707
+Média tempo: 0.012
+
+Instância: gr229
+Média valor: 134615
+Média tempo: 59.508
+
+Instância: gr24
+Média valor: 1272
+Média tempo: 0.021
+
+Instância: gr48
+Média valor: 5046
+Média tempo: 0.256
+
+Instância: gr96
+Média valor: 55209
+Média tempo: 3.164
+
+Instância: hk48
+Média valor: 11461
+Média tempo: 0.261
+
+Instância: kroA100
+Média valor: 21282
+Média tempo: 3.118
+
+Instância: kroA150
+Média valor: 26524
+Média tempo: 10.863
+
+Instância: kroA200
+Média valor: 29368
+Média tempo: 30.815
+
+Instância: kroB100
+Média valor: 22141
+Média tempo: 3.396
+
+Instância: kroB150
+Média valor: 26130
+Média tempo: 10.113
+
+Instância: kroB200
+Média valor: 29438.2
+Média tempo: 35.781
+
+Instância: kroC100
+Média valor: 20749
+Média tempo: 3.144
+
+Instância: kroD100
+Média valor: 21294
+Média tempo: 3.514
+
+Instância: kroE100
+Média valor: 22068
+Média tempo: 3.479
+
+Instância: lin105
+Média valor: 14379
+Média tempo: 3.699
+
+Instância: pr107
+Média valor: 44303
+Média tempo: 4.115
+
+Instância: pr124
+Média valor: 59030
+Média tempo: 5.888
+
+Instância: pr136
+Média valor: 96772
+Média tempo: 12.616
+
+Instância: pr144
+Média valor: 58537
+Média tempo: 9.985
+
+Instância: pr152
+Média valor: 73682
+Média tempo: 8.088
+
+Instância: pr226
+Média valor: 80369
+Média tempo: 41.658
+
+Instância: pr264
+Média valor: 49135
+Média tempo: 63.776
+
+Instância: pr299
+Média valor: 48197.4
+Média tempo: 125.940
+
+Instância: pr76
+Média valor: 108159
+Média tempo: 1.165
+
+Instância: rat195
+Média valor: 2323.2
+Média tempo: 28.166
+
+Instância: rat99
+Média valor: 1211
+Média tempo: 3.755
+
+Instância: rd100
+Média valor: 7910
+Média tempo: 3.524
+
+Instância: si175
+Média valor: 21407
+Média tempo: 15.716
+
+Instância: st70
+Média valor: 675
+Média tempo: 0.988
+
+Instância: swiss42
+Média valor: 1273
+Média tempo: 0.130
+
+Instância: ts225
+Média valor: 126643
+Média tempo: 28.274
+
+Instância: tsp225
+Média valor: 3916
+Média tempo: 44.336
+
+Instância: u159
+Média valor: 42080
+Média tempo: 10.101
+
+Instância: ulysses16
+Média valor: 6859
+Média tempo: 0.006
+
+Instância: ulysses22
+Média valor: 7013
+Média tempo: 0.016
