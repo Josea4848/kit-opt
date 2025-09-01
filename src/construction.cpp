@@ -4,10 +4,9 @@
 #include <random>
 
 // Constrói solução inicial
-Solution construction(Data &data) {
+void construction(Solution &s, Data &data) {
   int dimension = data.getDimension();
 
-  Solution s;
   s.value = 0;
   s.sequence.reserve(dimension + 1);
 
@@ -33,7 +32,6 @@ Solution construction(Data &data) {
     insertSolution(s, insertions[selected], cl);
   }
 
-  return s;
 }
 
 // Inicializa sequência com nó fixo e três nós escolhidos aleatoriamente

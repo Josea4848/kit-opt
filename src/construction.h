@@ -12,7 +12,7 @@ typedef struct InsertionInfo {
   double cost;
 } InsertionInfo;
 
-Solution construction(Data &data);
+void construction(Solution &s, Data &data);
 void chooseThreeNodes(std::vector<int> &v, Solution &s, Data &data);
 std::vector<InsertionInfo>
 calculateInsertion(const Solution &s, const std::vector<int> &cl, Data &data);

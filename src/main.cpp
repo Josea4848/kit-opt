@@ -1,47 +1,83 @@
-#include "construction.h"
-#include "localsearch.h"
+#include "ils.h"
 #include "seed.h"
 #include "solution.h"
 #include <chrono>
+#include <fstream>
 #include <iostream>
+#include <thread>
+#include <vector>
+
+#define NUM_THREADS 10
+
+// typedef struct result {
+//     double value;
+//     double time;
+// } result;
+
+// // Função que retorna o resultado ao invés de usar mutex
+// result executeILS(Data &data, int maxIter, int maxIterILS) {
+//     auto start = std::chrono::high_resolution_clock::now();
+//     Solution s = ILS(maxIter, maxIterILS, data);
+//     auto stop = std::chrono::high_resolution_clock::now();
+
+//     double duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() / 1000.0;
+//     return {s.value, duration};
+// }
 
 int main(int argc, char **argv) {
-  // Gerando seed
-  genSeed();
+    std::fstream file;
+    double sum_time = 0, sum_value = 0;
 
-  // Lendo dados de instância
-  auto data = Data(argc, argv[1]);
-  data.read();
-  size_t n = data.getDimension();
+    // Gerando seed
+    genSeed();
 
-  auto start = chrono::high_resolution_clock::now();
+    // Lendo dados de instância
+    auto data = Data(argc, argv[1]);
+    data.read();
+    size_t n = data.getDimension();
+    int maxIter = 50;
+    int maxIterILS = n >= 150 ? n / 2 : n;
 
-  // Inicializando estrutura da solução
-  Solution s = construction(data);
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0 ; i < 10; i++) {
+      Solution s = ILS(maxIter, maxIterILS, data);
+      sum_value += s.value;
+    }
 
-  showSolution(s);
-  cout << "custo antes: " << s.value << endl;
-  // bestImprovementSwap(s, data);
+    auto stop = std::chrono::high_resolution_clock::now();
+    double duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() / 10000.0;
 
-  // bestImprovement2Opt(s, data);
+    // Vetor para armazenar resultados de cada thread
+    // std::vector<result> results(NUM_THREADS);
 
-  localSearch(s, data);
+    // Criando e executando threads
+    // std::vector<std::thread> threads;
+    // for (int i = 0; i < NUM_THREADS; i++) {
+    //     threads.emplace_back([&, i]() {
+    //         results[i] = executeILS(data, maxIter, maxIterILS);
+    //     });
+    // }
 
-  cout << "custo dps: " << s.value << endl;
+    // // Esperar todas terminarem
+    // for (auto &t : threads) t.join();
 
-  showSolution(s);
+    // // Somando resultados
+    // for (auto &r : results) {
+    //     sum_time += r.time;
+    //     sum_value += r.value;
+    // }
 
-  calculateValue(s, data);
+    // Benchmark
+    file.open("benchmark.txt", std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo\n";
+        return -1;
+    }
 
-  cout << "custo dps do dps: " << s.value << endl;
+    file << "\nInstância: " << data.getInstanceName()
+         << "\nMédia tempo: " << duration 
+         << "\nMédia valor: " << sum_value / 10 << std::endl;
 
-  // Créditos a samuca pelo benchmark
-  auto stop = chrono::high_resolution_clock::now();
-  auto duration =
-      std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-
-  std::cout << data.getInstanceName();
-  printf(" - %.3lf\n", (double)(duration.count()) / 10000);
-
-  return 0;
+    file.close();
+    return 0;
 }

@@ -116,8 +116,6 @@ bool bestImprovementOrOpt(Solution &s, Data &data, int n) {
     int vi_prev = s.sequence[i - 1];
     int vi_next = s.sequence[i + n];
 
-    std::cout << "i = " << i << ": ";
-
     for (int j = !(i - 1) * (n + 1); j < s.sequence.size() - 1;
          j += 1 + !(i - j - 2) * (n + 1)) {
       int vj_prev = s.sequence[j];
