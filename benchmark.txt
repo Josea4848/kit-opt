@@ -2,3 +2,23 @@ CPU: Ryzen 5 5600 x 12
 Memory: 16GB 3200mhz
 
 
+
+Instância: gr17
+Média tempo: 0.0042
+Média valor: 2085
+
+Instância: att48
+Média tempo: 0.158
+Média valor: 10628
+
+Instância: kroA100
+Média tempo: 1.9067
+Média valor: 21282
+
+Instância: kroA150
+Média tempo: 6.1135
+Média valor: 26524
+
+Instância: st70
+Média tempo: 0.5743
+Média valor: 675
