@@ -9,7 +9,7 @@
 #include <thread>
 #include <vector>
 
-#define NUM_THREADS 10
+#define NUM_THREADS 5
 
 typedef struct result {
   double value;
@@ -53,19 +53,16 @@ int main(int argc, char **argv) {
   int maxIter = 50;
   int maxIterILS = n >= 150 ? n / 2 : n;
 
-  // por enquanto apenas para instâncias menores que 300
-  if (n >= 300) {
-    return 1;
-  } 
-
   // Criando e executando threads
-  std::vector<std::thread> threads;
-  for (int i = 0; i < NUM_THREADS; i++) {
-    threads.emplace_back(executeILS, argv[1], argc);
-  }
+  for (int k = 0; k < 2; k++) {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < NUM_THREADS; i++) {
+      threads.emplace_back(executeILS, argv[1], argc);
+    }
 
-  for (auto &t : threads)
-    t.join();
+    for (auto &t : threads)
+      t.join();
+  }
 
   for (auto &r : results) {
     sum_time += r.time;
@@ -73,16 +70,16 @@ int main(int argc, char **argv) {
   }
 
   // Benchmark
-  file.open("Benchmark/benchmark_10.txt", std::ios::app);
+  file.open("Benchmark/benchmark_10_final.txt", std::ios::app);
   if (!file.is_open()) {
     std::cerr << "Erro ao abrir o arquivo\n";
     return -1;
   }
 
   file << "\nInstância: " << data.getInstanceName() << std::endl;
-  file << "Média valor: " << sum_value / (double)NUM_THREADS << std::endl;
+  file << "Média valor: " << sum_value / (double)NUM_THREADS / 2.0 << std::endl;
   file << std::fixed << std::setprecision(3);
-  file << "Média tempo: " << sum_time / (double)NUM_THREADS << std::endl;
+  file << "Média tempo: " << sum_time / (double)NUM_THREADS / 2.0 << std::endl;
 
   file.close();
   return 0;
