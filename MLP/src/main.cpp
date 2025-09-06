@@ -3,6 +3,7 @@
 #include "localsearch.h"
 #include "seed.h"
 #include "solution.h"
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -11,7 +12,7 @@
 #include <thread>
 #include <vector>
 
-#define NUM_THREADS 5
+#define NUM_THREADS 1
 
 typedef struct result {
   double value;
@@ -25,9 +26,9 @@ void executeILS(char *path, int qtd_arg) {
   // Lendo dados de instância
   auto data = Data(qtd_arg, path);
   data.read();
-  size_t n = data.getDimension();
-  int maxIter = 50;
-  int maxIterILS = n >= 150 ? n / 2 : n;
+  int n = data.getDimension();
+  int maxIter = 10;
+  int maxIterILS = std::min(100, n);
 
   auto start = std::chrono::high_resolution_clock::now();
   Solution s = ILS(maxIter, maxIterILS, data);
@@ -45,54 +46,44 @@ int main(int argc, char **argv) {
   std::fstream file;
   double sum_time = 0, sum_value = 0;
 
+  // Gerando seed
+  genSeed();
+
   // Lendo dados de instância
   auto data = Data(argc, argv[1]);
   data.read();
-  // Gerando seed
-  genSeed();
-  data.printMatrixDist();
-  Solution s;
-  construction(s, data);
-  showSolution(s);
-  cout << "valor: " << s.value << endl;
-  calculateValue(s, data);
-  cout << "valor: " << s.value << endl;
+  int n = data.getDimension();
+  int maxIter = 10;
+  int maxIterILS = std::min(100, n);
 
-  // // Lendo dados de instância
-  // auto data = Data(argc, argv[1]);
-  // data.read();
-  // size_t n = data.getDimension();
-  // int maxIter = 50;
-  // int maxIterILS = n >= 150 ? n / 2 : n;
-  //
-  // // Criando e executando threads
-  // for (int k = 0; k < 2; k++) {
-  //   std::vector<std::thread> threads;
-  //   for (int i = 0; i < NUM_THREADS; i++) {
-  //     threads.emplace_back(executeILS, argv[1], argc);
-  //   }
-  //
-  //   for (auto &t : threads)
-  //     t.join();
-  // }
-  //
-  // for (auto &r : results) {
-  //   sum_time += r.time;
-  //   sum_value += r.value;
-  // }
-  //
-  // // Benchmark
-  // file.open("Benchmark/benchmark_10_final.txt", std::ios::app);
-  // if (!file.is_open()) {
-  //   std::cerr << "Erro ao abrir o arquivo\n";
-  //   return -1;
-  // }
-  //
-  // file << "\nInstância: " << data.getInstanceName() << std::endl;
-  // file << "Média valor: " << sum_value / (double)NUM_THREADS / 2.0 <<
-  // std::endl; file << std::fixed << std::setprecision(3); file << "Média
-  // tempo: " << sum_time / (double)NUM_THREADS / 2.0 << std::endl;
-  //
-  // file.close();
+  // Criando e executando threads
+  for (int k = 0; k < 2; k++) {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < NUM_THREADS; i++) {
+      threads.emplace_back(executeILS, argv[1], argc);
+    }
+
+    for (auto &t : threads)
+      t.join();
+  }
+
+  for (auto &r : results) {
+    sum_time += r.time;
+    sum_value += r.value;
+  }
+
+  // Benchmark
+  file.open("Benchmark/benchmark_10_final.txt", std::ios::app);
+  if (!file.is_open()) {
+    std::cerr << "Erro ao abrir o arquivo\n";
+    return -1;
+  }
+
+  file << "\nInstância: " << data.getInstanceName() << std::endl;
+  file << "Média valor: " << sum_value / (double)NUM_THREADS / 2.0 << std::endl;
+  file << std::fixed << std::setprecision(3);
+  file << "Média tempo: " << sum_time / (double)NUM_THREADS / 2.0 << std::endl;
+
+  file.close();
   return 0;
 }

@@ -1,8 +1,11 @@
 #include "localsearch.h"
+#include "solution.h"
+#include "subsequence.h"
 #include <algorithm>
 #include <random>
 
-void localSearch(Solution &s, Data &data) {
+void localSearch(Solution &s, Data &data,
+                 std::vector<std::vector<SubSequence>> &subseq_matrix) {
   std::vector<int> NL = {1, 2, 3, 4, 5};
   bool improved = false;
 
@@ -12,19 +15,19 @@ void localSearch(Solution &s, Data &data) {
 
     switch (NL[n]) {
     case 1:
-      improved = bestImprovementSwap(s, data);
+      improved = bestImprovementSwap(s, data, subseq_matrix);
       break;
     case 2:
-      improved = bestImprovement2Opt(s, data);
+      improved = bestImprovement2Opt(s, data, subseq_matrix);
       break;
     case 3:
-      improved = bestImprovementOrOpt(s, data, 1);
+      improved = bestImprovementOrOpt(s, data, 1, subseq_matrix);
       break;
     case 4:
-      improved = bestImprovementOrOpt(s, data, 2);
+      improved = bestImprovementOrOpt(s, data, 2, subseq_matrix);
       break;
     case 5:
-      improved = bestImprovementOrOpt(s, data, 3);
+      improved = bestImprovementOrOpt(s, data, 3, subseq_matrix);
       break;
     }
 
@@ -36,115 +39,127 @@ void localSearch(Solution &s, Data &data) {
   }
 }
 
-bool bestImprovementSwap(Solution &s, Data &data) {
-  double best_delta = 0;
+bool bestImprovementSwap(Solution &s, Data &data,
+                         std::vector<std::vector<SubSequence>> &subseq_matrix) {
+  double best_value = s.value;
+  int matrix_dimension = data.getDimension();
   int best_i, best_j;
 
   for (int i = 1; i < s.sequence.size() - 4; i++) {
-    int vi = s.sequence[i];
-    int vi_next = s.sequence[i + 1];
-    int vi_prev = s.sequence[i - 1];
-
     for (int j = i + 2; j < s.sequence.size() - 1; j++) {
-      int vj = s.sequence[j];
-      int vj_next = s.sequence[j + 1];
-      int vj_prev = s.sequence[j - 1];
+      SubSequence sigma_1 =
+          concatenate(subseq_matrix[0][i - 1], subseq_matrix[j][j], data);
+      SubSequence sigma_2 =
+          concatenate(sigma_1, subseq_matrix[i + 1][j - 1], data);
+      sigma_2 = concatenate(sigma_2, subseq_matrix[i][i], data);
+      sigma_2 =
+          concatenate(sigma_2, subseq_matrix[j + 1][matrix_dimension], data);
 
-      double delta =
-          data.getDistance(vj, vi_prev) + data.getDistance(vj, vi_next) +
-          data.getDistance(vi, vj_prev) + data.getDistance(vi, vj_next) -
-          data.getDistance(vi, vi_prev) - data.getDistance(vi, vi_next) -
-          data.getDistance(vj, vj_prev) - data.getDistance(vj, vj_next);
-
-      if (delta < best_delta) {
-        best_delta = std::move(delta);
+      // Sequência com menor valor
+      if (sigma_2.c < best_value) {
+        best_value = std::move(sigma_2.c);
         best_i = i;
         best_j = j;
       }
     }
   }
 
-  if (best_delta < 0) {
+  if (best_value < s.value) {
     std::swap(s.sequence[best_i], s.sequence[best_j]);
-    s.value += best_delta;
+    updatePartialSubSeq(s, subseq_matrix, best_i, best_j, data);
+    s.value = std::move(best_value);
     return true;
   }
 
   return false;
 }
 
-bool bestImprovement2Opt(Solution &s, Data &data) {
-  double best_delta = 0;
+bool bestImprovement2Opt(Solution &s, Data &data,
+                         std::vector<std::vector<SubSequence>> &subseq_matrix) {
+  double best_value = s.value;
+  int matrix_dimension = data.getDimension();
   int best_i, best_j;
 
   for (int i = 1; i < s.sequence.size() - 2; i++) {
-    int vi = s.sequence[i];
-    int vi_prev = s.sequence[i - 1];
-
     for (int j = i + 1; j < s.sequence.size() - 2 + (1 % i); j++) {
-      int vj = s.sequence[j];
-      int vj_next = s.sequence[j + 1];
+      SubSequence sigma1 =
+          concatenate(subseq_matrix[0][i - 1], subseq_matrix[j][i], data);
+      SubSequence sigma2 =
+          concatenate(sigma1, subseq_matrix[j + 1][matrix_dimension], data);
 
-      double delta =
-          data.getDistance(vj, vi_prev) + data.getDistance(vi, vj_next) -
-          data.getDistance(vi, vi_prev) - data.getDistance(vj, vj_next);
-
-      if (delta < best_delta) {
-        best_delta = std::move(delta);
+      if (sigma2.c < best_value) {
+        best_value = std::move(sigma2.c);
         best_i = i;
         best_j = j;
       }
     }
   }
 
-  if (best_delta < 0) {
+  if (best_value < s.value) {
     std::reverse(s.sequence.begin() + best_i, s.sequence.begin() + best_j + 1);
-    s.value += best_delta;
+    s.value = std::move(best_value);
+    updatePartialSubSeq(s, subseq_matrix, best_i, best_j, data);
     return true;
   }
 
   return false;
 }
 
-bool bestImprovementOrOpt(Solution &s, Data &data, int n) {
-  double best_delta = 0;
+bool bestImprovementOrOpt(
+    Solution &s, Data &data, int n,
+    std::vector<std::vector<SubSequence>> &subseq_matrix) {
+  double best_value = s.value;
+  int matrix_dimension = data.getDimension();
   int best_i, best_j;
 
-  for (int i = 1; i < s.sequence.size() - n; i++) {
-    int vi_first = s.sequence[i];
-    int vi_last = s.sequence[i + n - 1];
-    int vi_prev = s.sequence[i - 1];
-    int vi_next = s.sequence[i + n];
+  // Faz todos os movimentos após o segmento
+  for (int i = 1; i < s.sequence.size() - n - 2; i++) {
+    for (int j = i + n; j < s.sequence.size() - 1; j++) {
+      SubSequence sigma_1 =
+          concatenate(subseq_matrix[0][i - 1], subseq_matrix[i + n][j], data);
+      SubSequence sigma_2 =
+          concatenate(sigma_1, subseq_matrix[i][i + n - 1], data);
+      SubSequence sigma_3 =
+          concatenate(sigma_2, subseq_matrix[j + 1][matrix_dimension], data);
 
-    for (int j = !(i - 1) * (n + 1); j < s.sequence.size() - 1;
-         j += 1 + !(i - j - 2) * (n + 1)) {
-      int vj_prev = s.sequence[j];
-      int vj_next = s.sequence[j + 1];
-
-      double delta = data.getDistance(vi_first, vj_prev) +
-                     data.getDistance(vi_last, vj_next) +
-                     data.getDistance(vi_prev, vi_next) -
-                     data.getDistance(vi_first, vi_prev) -
-                     data.getDistance(vi_last, vi_next) -
-                     data.getDistance(vj_prev, vj_next);
-
-      if (delta < best_delta) {
-        best_delta = std::move(delta);
+      if (sigma_3.c < best_value) {
+        best_value = std::move(sigma_3.c);
         best_i = i;
         best_j = j;
       }
     }
   }
 
-  if (best_delta < 0) {
+  // Faz todos os movimentos antes do segmento
+  for (int i = 2; i < s.sequence.size() - n - 1; i++) {
+    for (int j = 0; j < i - 1; j++) {
+      SubSequence sigma_1 =
+          concatenate(subseq_matrix[0][j], subseq_matrix[i][i + n - 1], data);
+      SubSequence sigma_2 =
+          concatenate(sigma_1, subseq_matrix[j + 1][i - 1], data);
+      SubSequence sigma_3 =
+          concatenate(sigma_2, subseq_matrix[i + n][matrix_dimension], data);
+
+      if (sigma_3.c < best_value) {
+        best_value = std::move(sigma_3.c);
+        best_i = i;
+        best_j = j;
+      }
+    }
+  }
+
+  if (best_value < s.value) {
     if (best_i < best_j) {
       std::rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n,
                   s.sequence.begin() + best_j + 1);
+
+      updatePartialSubSeq(s, subseq_matrix, best_i, best_j, data);
     } else {
       std::rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i,
                   s.sequence.begin() + best_i + n);
+      updatePartialSubSeq(s, subseq_matrix, best_j + 1, best_i + n - 1, data);
     }
-    s.value += best_delta;
+    s.value = std::move(best_value);
     return true;
   }
 

@@ -1,7 +1,6 @@
 #include "ils.h"
-#include "localsearch.h"
-#include "seed.h"
 #include "solution.h"
+#include "subsequence.h"
 #include <algorithm>
 #include <cmath>
 #include <random>
@@ -9,6 +8,9 @@
 Solution ILS(int maxIter, int maxIterILS, Data &data) {
   Solution bestOfAll;
   bestOfAll.value = INFINITY;
+  int n = data.getDimension();
+  std::vector<std::vector<SubSequence>> subseq_matrix(
+      n + 1, std::vector<SubSequence>(n + 1));
 
   for (int i = 0; i < maxIter; i++) {
     int iterILS = 0;
@@ -16,13 +18,15 @@ Solution ILS(int maxIter, int maxIterILS, Data &data) {
     // Geração de soluções
     Solution best;
     construction(best, data);
-    localSearch(best, data);
+    updateAllSubSeq(best, subseq_matrix, data);
+    localSearch(best, data, subseq_matrix);
 
     while (iterILS < maxIterILS) {
       Solution s = best;
-      perturbation(s, data);
-      localSearch(s, data);
-      // Houve melhora após pertubação + busca local
+      perturbation(s, subseq_matrix, data);
+      localSearch(s, data, subseq_matrix);
+
+      // houve melhora após pertubação + busca local
       if (s.value < best.value) {
         best = s;
         iterILS = 0;
@@ -38,7 +42,9 @@ Solution ILS(int maxIter, int maxIterILS, Data &data) {
   return bestOfAll;
 }
 
-void perturbation(Solution &s, Data &data) {
+void perturbation(Solution &s,
+                  std::vector<std::vector<SubSequence>> &subseq_matrix,
+                  Data &data) {
   int dimension = data.getDimension();
   int i_start, i_end, j_start, j_end, i_size, j_size;
   int vi_first, vi_last, vi_prev, vi_next, vj_first, vj_last, vj_prev, vj_next;
@@ -91,9 +97,13 @@ void perturbation(Solution &s, Data &data) {
                 s.sequence.begin() + i_end - j_size + 1);
   }
 
-  s.value +=
-      data.getDistance(vj_first, vi_prev) + data.getDistance(vj_last, vi_next) +
-      data.getDistance(vi_first, vj_prev) + data.getDistance(vi_last, vj_next) -
-      data.getDistance(vi_first, vi_prev) - data.getDistance(vi_last, vi_next) -
-      data.getDistance(vj_first, vj_prev) - data.getDistance(vj_last, vj_next);
+  calculateValue(s, data);
+  updateAllSubSeq(s, subseq_matrix, data);
+  // s.value +=
+  //     data.getDistance(vj_first, vi_prev) + data.getDistance(vj_last,
+  //     vi_next) + data.getDistance(vi_first, vj_prev) +
+  //     data.getDistance(vi_last, vj_next) - data.getDistance(vi_first,
+  //     vi_prev) - data.getDistance(vi_last, vi_next) -
+  //     data.getDistance(vj_first, vj_prev) - data.getDistance(vj_last,
+  //     vj_next);
 }
