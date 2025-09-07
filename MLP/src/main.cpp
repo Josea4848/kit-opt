@@ -1,6 +1,4 @@
-#include "construction.h"
 #include "ils.h"
-#include "localsearch.h"
 #include "seed.h"
 #include "solution.h"
 #include <algorithm>
@@ -12,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-#define NUM_THREADS 1
+#define NUM_THREADS 5
 
 typedef struct result {
   double value;
@@ -68,6 +66,9 @@ int main(int argc, char **argv) {
   }
 
   for (auto &r : results) {
+
+    cout << "Valor: " << r.value << endl;
+    cout << "TEMPO: " << r.time << endl;
     sum_time += r.time;
     sum_value += r.value;
   }
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
 
   file << "\nInstância: " << data.getInstanceName() << std::endl;
   file << "Média valor: " << sum_value / (double)NUM_THREADS / 2.0 << std::endl;
-  file << std::fixed << std::setprecision(3);
+  file << std::fixed << std::setprecision(10);
   file << "Média tempo: " << sum_time / (double)NUM_THREADS / 2.0 << std::endl;
 
   file.close();

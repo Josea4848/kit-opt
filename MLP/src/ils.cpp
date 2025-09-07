@@ -1,9 +1,6 @@
 #include "ils.h"
 #include "solution.h"
 #include "subsequence.h"
-#include <algorithm>
-#include <cmath>
-#include <random>
 
 Solution ILS(int maxIter, int maxIterILS, Data &data) {
   Solution bestOfAll;
@@ -19,6 +16,8 @@ Solution ILS(int maxIter, int maxIterILS, Data &data) {
     Solution best;
     construction(best, data);
     updateAllSubSeq(best, subseq_matrix, data);
+
+    // Primeiro busca local em cima da solução inicial
     localSearch(best, data, subseq_matrix);
 
     while (iterILS < maxIterILS) {
@@ -30,7 +29,8 @@ Solution ILS(int maxIter, int maxIterILS, Data &data) {
       if (s.value < best.value) {
         best = s;
         iterILS = 0;
-      }
+      } else
+        updateAllSubSeq(best, subseq_matrix, data);
       iterILS++;
     }
 
@@ -47,8 +47,6 @@ void perturbation(Solution &s,
                   Data &data) {
   int dimension = data.getDimension();
   int i_start, i_end, j_start, j_end, i_size, j_size;
-  int vi_first, vi_last, vi_prev, vi_next, vj_first, vj_last, vj_prev, vj_next;
-
   std::uniform_int_distribution<> index_dist(1, s.sequence.size() - 3);
 
   // Primeiro segmento
@@ -72,38 +70,45 @@ void perturbation(Solution &s,
       break;
   }
 
-  vi_first = s.sequence[i_start];
-  vi_last = s.sequence[i_end];
-  vi_prev = s.sequence[i_start - 1];
-  vi_next = s.sequence[i_end + 1];
-
-  vj_first = s.sequence[j_start];
-  vj_last = s.sequence[j_end];
-  vj_prev = s.sequence[j_start - 1];
-  vj_next = s.sequence[j_end + 1];
+  double new_value;
 
   // Segmento i antes do segmento j
   if (i_end < j_start) {
+    SubSequence sigma_1 = SubSequence::concatenate(
+        subseq_matrix[0][i_start - 1], subseq_matrix[j_start][j_end], data);
+    sigma_1 = SubSequence::concatenate(
+        sigma_1, subseq_matrix[i_end + 1][j_start - 1], data);
+    SubSequence sigma_2 = SubSequence::concatenate(
+        subseq_matrix[i_start][i_end],
+        subseq_matrix[j_end + 1][subseq_matrix.size() - 1], data);
+    SubSequence sigma_3 = SubSequence::concatenate(sigma_1, sigma_2, data);
+    new_value = sigma_3.c;
+
     std::rotate(s.sequence.begin() + i_start, s.sequence.begin() + i_end + 1,
                 s.sequence.begin() + j_end + 1);
     std::rotate(s.sequence.begin() + i_start,
                 s.sequence.begin() + j_start - i_size,
                 s.sequence.begin() + j_end - i_size + 1);
+    updatePartialSubSeq(s, subseq_matrix, i_start, j_end, data);
+
   } else if (j_end < i_start) {
+    SubSequence sigma_1 = SubSequence::concatenate(
+        subseq_matrix[0][j_start - 1], subseq_matrix[i_start][i_end], data);
+    sigma_1 = SubSequence::concatenate(
+        sigma_1, subseq_matrix[j_end + 1][i_start - 1], data);
+    SubSequence sigma_2 = SubSequence::concatenate(
+        subseq_matrix[j_start][j_end],
+        subseq_matrix[i_end + 1][subseq_matrix.size() - 1], data);
+    SubSequence sigma_3 = SubSequence::concatenate(sigma_1, sigma_2, data);
+    new_value = sigma_3.c;
+
     std::rotate(s.sequence.begin() + j_start, s.sequence.begin() + j_end + 1,
                 s.sequence.begin() + i_end + 1);
     std::rotate(s.sequence.begin() + j_start,
                 s.sequence.begin() + i_start - j_size,
                 s.sequence.begin() + i_end - j_size + 1);
+    updatePartialSubSeq(s, subseq_matrix, j_start, i_end, data);
   }
 
-  calculateValue(s, data);
-  updateAllSubSeq(s, subseq_matrix, data);
-  // s.value +=
-  //     data.getDistance(vj_first, vi_prev) + data.getDistance(vj_last,
-  //     vi_next) + data.getDistance(vi_first, vj_prev) +
-  //     data.getDistance(vi_last, vj_next) - data.getDistance(vi_first,
-  //     vi_prev) - data.getDistance(vi_last, vi_next) -
-  //     data.getDistance(vj_first, vj_prev) - data.getDistance(vj_last,
-  //     vj_next);
+  s.value = new_value;
 }

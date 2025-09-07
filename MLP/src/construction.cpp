@@ -1,8 +1,5 @@
 #include "construction.h"
 #include "solution.h"
-#include <algorithm>
-#include <cstdlib>
-#include <random>
 
 // Constrói solução inicial
 void construction(Solution &s, Data &data) {
