@@ -9,6 +9,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <limits>
 
 #define NUM_THREADS 5
 
@@ -43,6 +44,7 @@ void executeILS(char *path, int qtd_arg) {
 int main(int argc, char **argv) {
   std::fstream file;
   double sum_time = 0, sum_value = 0;
+  double best_value = std::numeric_limits<double>::infinity();;
 
   // Gerando seed
   genSeed();
@@ -66,11 +68,12 @@ int main(int argc, char **argv) {
   }
 
   for (auto &r : results) {
-
-    cout << "Valor: " << r.value << endl;
-    cout << "TEMPO: " << r.time << endl;
     sum_time += r.time;
     sum_value += r.value;
+
+    if(r.value < best_value) {
+      best_value = r.value;
+    }
   }
 
   // Benchmark
@@ -81,8 +84,10 @@ int main(int argc, char **argv) {
   }
 
   file << "\nInstância: " << data.getInstanceName() << std::endl;
+  file << std::fixed << std::setprecision(1);
   file << "Média valor: " << sum_value / (double)NUM_THREADS / 2.0 << std::endl;
-  file << std::fixed << std::setprecision(10);
+  file << "Melhor valor: " << best_value << std::endl;
+  file << std::fixed << std::setprecision(3);
   file << "Média tempo: " << sum_time / (double)NUM_THREADS / 2.0 << std::endl;
 
   file.close();

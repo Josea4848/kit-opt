@@ -1,3 +1,113 @@
 CPU: Ryzen 5 5600 x 12
 Memory: 16GB 3200mhz
 10 Repetições
+
+Instância: att48
+Média valor: 209320.0
+Melhor valor: 209320.0
+Média tempo: 0.077
+
+Instância: berlin52
+Média valor: 143721.0
+Melhor valor: 143721.0
+Média tempo: 0.102
+
+Instância: brazil58
+Média valor: 512361.0
+Melhor valor: 512361.0
+Média tempo: 0.160
+
+Instância: dantzig42
+Média valor: 12528.0
+Melhor valor: 12528.0
+Média tempo: 0.051
+
+Instância: eil101
+Média valor: 27513.0
+Melhor valor: 27513.0
+Média tempo: 1.758
+
+Instância: eil51
+Média valor: 10201.9
+Melhor valor: 10178.0
+Média tempo: 0.115
+
+Instância: eil76
+Média valor: 17976.0
+Melhor valor: 17976.0
+Média tempo: 0.490
+
+Instância: gr48
+Média valor: 102378.0
+Melhor valor: 102378.0
+Média tempo: 0.088
+
+Instância: gr96
+Média valor: 2097170.0
+Melhor valor: 2097170.0
+Média tempo: 0.983
+
+Instância: hk48
+Média valor: 247926.0
+Melhor valor: 247926.0
+Média tempo: 0.078
+
+Instância: kroA100
+Média valor: 983128.0
+Melhor valor: 983128.0
+Média tempo: 1.387
+
+Instância: kroB100
+Média valor: 986008.0
+Melhor valor: 986008.0
+Média tempo: 1.368
+
+Instância: kroC100
+Média valor: 961324.0
+Melhor valor: 961324.0
+Média tempo: 1.356
+
+Instância: kroD100
+Média valor: 976965.0
+Melhor valor: 976965.0
+Média tempo: 1.256
+
+Instância: kroE100
+Média valor: 971266.0
+Melhor valor: 971266.0
+Média tempo: 1.387
+
+Instância: lin105
+Média valor: 603910.0
+Melhor valor: 603910.0
+Média tempo: 1.220
+
+Instância: pr107
+Média valor: 2026626.0
+Melhor valor: 2026626.0
+Média tempo: 1.656
+
+Instância: pr76
+Média valor: 3455242.0
+Melhor valor: 3455242.0
+Média tempo: 0.401
+
+Instância: rat99
+Média valor: 57986.0
+Melhor valor: 57986.0
+Média tempo: 1.630
+
+Instância: rd100
+Média valor: 340047.0
+Melhor valor: 340047.0
+Média tempo: 1.182
+
+Instância: st70
+Média valor: 20557.0
+Melhor valor: 20557.0
+Média tempo: 0.313
+
+Instância: swiss42
+Média valor: 22327.0
+Melhor valor: 22327.0
+Média tempo: 0.051
